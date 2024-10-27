@@ -1,18 +1,12 @@
 import streamlit as st
-from streamlit_webrtc import VideoTransformerBase, webrtc_streamer
+from PIL import Image
 
-class VideoTransformer(VideoTransformerBase):
-    def transform(self, frame):
-        return frame  # You can process the frame here if needed
+st.title("EmojiGen Photo")
 
-# Title of the app
-st.title("Camera App")
+# Camera input widget
+photo = st.camera_input("Take a picture")
 
-# Set up the video stream
-webrtc_streamer(key="example", video_transformer_factory=VideoTransformer)
-
-# Button to capture the image
-if st.button("Capture"):
-    frame = webrtc_streamer.get_frame()  # Get the latest frame
-    if frame is not None:
-        st.image(frame.to_ndarray(), caption='Captured Image', use_column_width=True)
+if photo is not None:
+    # Open and display the photo
+    image = Image.open(photo)
+    st.image(image, caption='Captured Image', use_column_width=True)
