@@ -3,10 +3,10 @@ from streamlit_webrtc import VideoTransformerBase, webrtc_streamer
 
 class VideoTransformer(VideoTransformerBase):
     def transform(self, frame):
-        return frame  
+        return frame  # You can process the frame here if needed
 
-
-st.title("EmojiGen")
+# Title of the app
+st.title("Camera App")
 
 # Set up the video stream
 webrtc_streamer(key="example", video_transformer_factory=VideoTransformer)
