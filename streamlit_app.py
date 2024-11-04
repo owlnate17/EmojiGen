@@ -15,8 +15,6 @@ import os
 
 def draw_emoji_page():
     st.title("EmojiGen Draw")
-
-    """Function to create the Draw Emoji page with brush customization."""
     
     # Sidebar controls for brush color and size
     st.sidebar.subheader("Brush Settings")
