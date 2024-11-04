@@ -1,23 +1,29 @@
-import base64
 import json
-import os
-import re
-import time
-import uuid
 from io import BytesIO
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import streamlit as st
-from PIL import Image
 from streamlit_drawable_canvas import st_canvas
+from PIL import Image
+import base64
+import re
+import uuid
+import time
+import os
 
 def draw_emoji_page():
-    """Function to create the Draw Emoji page."""
+    """Function to create the Draw Emoji page with brush customization."""
+    
+    # Sidebar controls for brush color and size
+    st.sidebar.subheader("Brush Settings")
+    stroke_width = st.sidebar.slider("Brush Size", 1, 20, 5)  # Slider for brush size
+    stroke_color = st.sidebar.color_picker("Brush Color", "#000000")  # Color picker for brush color
+
     st.markdown(
         """
-        Realtime update is disabled for this demo. 
+        Here, you can draw your desired emoji! :) \n
         Press the 'Download' button at the bottom of the canvas to update exported image.
         """
     )
@@ -65,7 +71,14 @@ def draw_emoji_page():
             }}
         </style> """
 
-    data = st_canvas(update_streamlit=False, key="png_export")
+    # Canvas component with brush settings
+    data = st_canvas(
+        stroke_width=stroke_width,
+        stroke_color=stroke_color,
+        update_streamlit=False,
+        key="png_export"
+    )
+
     if data is not None and data.image_data is not None:
         img_data = data.image_data
         im = Image.fromarray(img_data.astype("uint8"), mode="RGBA")
