@@ -107,6 +107,16 @@ def emoji_photo_page():
         image = Image.open(photo)
         st.image(image, caption='Captured Image', use_column_width=True)
 
+        # Convert image to PNG format
+        buffered = BytesIO()
+        image.save(buffered, format="PNG")
+        img_data = buffered.getvalue()
+        b64 = base64.b64encode(img_data).decode()
+
+        # Create a download link for the PNG image
+        download_link = f'<a href="data:image/png;base64,{b64}" download="captured_image.png">Download PNG</a>'
+        st.markdown(download_link, unsafe_allow_html=True)
+
 def emoji_text_page():
     """Function to create the EmojiGen Text page."""
     st.title("EmojiGen Text")
@@ -128,8 +138,6 @@ def emoji_text_page():
             f'<a href="data:text/plain;base64,{base64.b64encode(text.encode()).decode()}" download="{text_filename}">Download text</a>',
             unsafe_allow_html=True
         )
-
-        
 
 def main():
     st.set_page_config(
