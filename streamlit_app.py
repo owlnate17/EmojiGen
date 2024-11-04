@@ -115,8 +115,21 @@ def emoji_text_page():
     text = st.text_input("Enter text")
 
     if text:
+        text = text.strip()
+
         # Display the text
         st.write(f"You entered: {text}")
+        text_filename = "tmp/text.txt"
+        with open(text_filename, "w") as file:
+            file.write(text)
+
+        # Download link for the text file
+        st.markdown(
+            f'<a href="data:text/plain;base64,{base64.b64encode(text.encode()).decode()}" download="{text_filename}">Download text</a>',
+            unsafe_allow_html=True
+        )
+
+        
 
 def main():
     st.set_page_config(
