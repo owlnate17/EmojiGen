@@ -1,20 +1,22 @@
+from streamlit_drawable_canvas import st_canvas
+import streamlit as st
+from PIL import Image
 import base64
-import json
-import os
 import re
-import time
 import uuid
 from io import BytesIO
 from pathlib import Path
-
-import numpy as np
-import pandas as pd
-import streamlit as st
-from PIL import Image
-from streamlit_drawable_canvas import st_canvas
+import time
+import os
 
 def draw_emoji_page():
-    """Function to create the Draw Emoji page."""
+    """Function to create the Draw Emoji page with brush customization."""
+    
+    # Sidebar controls for brush color and size
+    st.sidebar.subheader("Brush Settings")
+    stroke_width = st.sidebar.slider("Brush Size", 1, 20, 5)  # Slider for brush size
+    stroke_color = st.sidebar.color_picker("Brush Color", "#000000")  # Color picker for brush color
+
     st.markdown(
         """
         Realtime update is disabled for this demo. 
@@ -65,7 +67,14 @@ def draw_emoji_page():
             }}
         </style> """
 
-    data = st_canvas(update_streamlit=False, key="png_export")
+    # Canvas component with brush settings
+    data = st_canvas(
+        stroke_width=stroke_width,
+        stroke_color=stroke_color,
+        update_streamlit=False,
+        key="png_export"
+    )
+
     if data is not None and data.image_data is not None:
         img_data = data.image_data
         im = Image.fromarray(img_data.astype("uint8"), mode="RGBA")
@@ -81,36 +90,3 @@ def draw_emoji_page():
             + f'<a download="{file_path}" id="{button_id}" href="data:file/txt;base64,{b64}">Export PNG</a><br></br>'
         )
         st.markdown(dl_link, unsafe_allow_html=True)
-
-def emoji_photo_page():
-    """Function to create the EmojiGen Photo page."""
-    st.title("EmojiGen Photo")
-
-    # Camera input widget
-    photo = st.camera_input("Take a picture")
-
-    if photo is not None:
-        # Open and display the photo
-        image = Image.open(photo)
-        st.image(image, caption='Captured Image', use_column_width=True)
-
-def main():
-    st.set_page_config(
-        page_title="Draw your emoji",
-        page_icon=":pencil2:",
-        layout="wide"  # This makes the page full-width
-    )
-
-    st.title("Welcome to EmojiGen!")
-    
-    # Sidebar for navigation
-    st.sidebar.title("Navigation")
-    page = st.sidebar.radio("Select a Page", ("Draw Your Emoji", "EmojiGen Photo"))
-
-    if page == "Draw Your Emoji":
-        draw_emoji_page()
-    elif page == "EmojiGen Photo":
-        emoji_photo_page()
-
-if __name__ == "__main__":
-    main()
