@@ -1,26 +1,15 @@
-import base64
 import json
-import os
-import re
-import time
-import uuid
 from io import BytesIO
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import streamlit as st
-from PIL import Image
 from streamlit_drawable_canvas import st_canvas
-
-from streamlit_drawable_canvas import st_canvas
-import streamlit as st
 from PIL import Image
 import base64
 import re
 import uuid
-from io import BytesIO
-from pathlib import Path
 import time
 import os
 
