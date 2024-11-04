@@ -94,6 +94,17 @@ def emoji_photo_page():
         image = Image.open(photo)
         st.image(image, caption='Captured Image', use_column_width=True)
 
+def emoji_text_page():
+    """Function to create the EmojiGen Text page."""
+    st.title("EmojiGen Text")
+
+    # Text input widget
+    text = st.text_input("Enter text")
+
+    if text:
+        # Display the text
+        st.write(f"You entered: {text}")
+
 def main():
     st.set_page_config(
         page_title="Draw your emoji",
@@ -105,12 +116,14 @@ def main():
     
     # Sidebar for navigation
     st.sidebar.title("Navigation")
-    page = st.sidebar.radio("Select a Page", ("Draw Your Emoji", "EmojiGen Photo"))
+    page = st.sidebar.radio("Select a Page", ("Draw Your Emoji", "EmojiGen Photo", "EmojiGen Text"))
 
     if page == "Draw Your Emoji":
         draw_emoji_page()
     elif page == "EmojiGen Photo":
         emoji_photo_page()
+    elif page == "EmojiGen Text":
+        emoji_text_page()
 
 if __name__ == "__main__":
     main()
