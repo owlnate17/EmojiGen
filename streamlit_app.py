@@ -23,7 +23,7 @@ def draw_emoji_page():
 
     st.markdown(
         """
-        Realtime update is disabled for this demo. 
+        Here, you can draw your desired emoji! :) 
         Press the 'Download' button at the bottom of the canvas to update exported image.
         """
     )
