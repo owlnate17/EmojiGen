@@ -24,7 +24,7 @@ model_id = "microsoft/Phi-3.5-vision-instruct"
 # Note: set _attn_implementation='eager' if you don't have flash_attn installed
 model = AutoModelForCausalLM.from_pretrained(
   model_id, 
-  device_map="cuda", 
+  device_map="cpu", 
   trust_remote_code=True, 
   torch_dtype="auto", 
   _attn_implementation='eager'    
