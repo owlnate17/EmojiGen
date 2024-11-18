@@ -55,7 +55,7 @@ prompt = processor.tokenizer.apply_chat_template(
   add_generation_prompt=True
 )
 
-inputs = processor(prompt, images, return_tensors="pt").to("cuda:0") 
+inputs = processor(prompt, images, return_tensors="pt").to("cpu:0") 
 
 generation_args = { 
     "max_new_tokens": 1000, 
@@ -186,7 +186,7 @@ def emoji_photo_page():
         )
 
         # Process the image and prompt
-        inputs = processor(prompt, images, return_tensors="pt").to("cuda:0")
+        inputs = processor(prompt, images, return_tensors="pt").to("cpu:0")
 
         # Define generation arguments
         generation_args = {
