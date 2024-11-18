@@ -13,6 +13,7 @@ import uuid
 import time
 import os
 
+
 def draw_emoji_page():
     st.title("EmojiGen Draw")
     
