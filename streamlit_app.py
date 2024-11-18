@@ -15,18 +15,23 @@ import os
 
 def draw_emoji_page():
     st.title("EmojiGen Draw")
+
+    st.write(
+        """
+        Welcome to the EmojiGen Draw page! Here's how you can use the drawing tool:
+        
+        1. Use the brush size slider in the sidebar to adjust the thickness of your brush.
+        2. Pick a color for your brush using the color picker.
+        3. Start drawing directly on the canvas. Your drawing will be saved as a PNG.
+        4. Once you're done, click the "Export PNG" button to download your drawing.
+        """
+    )
     
     # Sidebar controls for brush color and size
     st.sidebar.subheader("Brush Settings")
     stroke_width = st.sidebar.slider("Brush Size", 1, 20, 5)  # Slider for brush size
     stroke_color = st.sidebar.color_picker("Brush Color", "#000000")  # Color picker for brush color
-
-    st.markdown(
-        """
-        Here, you can draw your desired emoji! :) \n
-        Press the 'Download' button at the bottom of the canvas to update exported image.
-        """
-    )
+   
     try:
         Path("tmp/").mkdir()
     except FileExistsError:
@@ -44,32 +49,6 @@ def draw_emoji_page():
     
     file_path = f"tmp/{button_id}.png"
 
-    custom_css = f""" 
-        <style>
-            #{button_id} {{
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                background-color: rgb(255, 255, 255);
-                color: rgb(38, 39, 48);
-                padding: .25rem .75rem;
-                position: relative;
-                text-decoration: none;
-                border-radius: 4px;
-                border-width: 1px;
-                border-style: solid;
-                border-color: rgb(230, 234, 241);
-            }} 
-            #{button_id}:hover {{
-                border-color: rgb(246, 51, 102);
-                color: rgb(246, 51, 102);
-            }}
-            #{button_id}:active {{
-                box-shadow: none;
-                background-color: rgb(246, 51, 102);
-                color: white;
-            }}
-        </style> """
 
     # Canvas component with brush settings
     data = st_canvas(
@@ -89,6 +68,31 @@ def draw_emoji_page():
         img_data = buffered.getvalue()
         b64 = base64.b64encode(img_data).decode()
 
+        custom_css = f"""
+            <style>
+                #{button_id} {{
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    background-color: rgb(255, 255, 255);
+                    color: rgb(38, 39, 48);
+                    padding: .25rem .75rem;
+                    border-radius: 4px;
+                    border: 1px solid rgb(230, 234, 241);
+                }}
+                #{button_id}:hover {{
+                    border-color: rgb(246, 51, 102);
+                    color: FF4081;
+                    background-color: FFEB3B;
+                }}
+                #{button_id}:active {{
+                    background-color: rgb(246, 51, 102);
+                    color: blue;
+                }}
+            </style>
+        """
+
+
         dl_link = (
             custom_css
             + f'<a download="{file_path}" id="{button_id}" href="data:file/txt;base64,{b64}">Export PNG</a><br></br>'
@@ -98,6 +102,16 @@ def draw_emoji_page():
 def emoji_photo_page():
     """Function to create the EmojiGen Photo page."""
     st.title("EmojiGen Photo")
+
+    st.write(
+        """
+        Welcome to the EmojiGen Photo page! Here's how you can use the camera:
+        
+        1. Click the 'Take a picture' button to capture an image using your camera.
+        2. Once the photo is taken, it will be displayed on the screen.
+        3. You can then download the image as a PNG by clicking the download link below.
+        """
+    )
 
     # Camera input widget
     photo = st.camera_input("Take a picture")
@@ -121,6 +135,16 @@ def emoji_text_page():
     """Function to create the EmojiGen Text page."""
     st.title("EmojiGen Text")
 
+    st.write(
+        """
+        Welcome to the EmojiGen Text page! Here's how you can create an emoji description:
+        
+        1. Type in your text description in the input field.
+        2. Click the "Submit" button to see your entered text.
+        3. You can download your text file by clicking the download link.
+        """
+    )
+
     # Text input widget
     text = st.text_input("Enter text")
 
@@ -138,6 +162,7 @@ def emoji_text_page():
             f'<a href="data:text/plain;base64,{base64.b64encode(text.encode()).decode()}" download="{text_filename}">Download text</a>',
             unsafe_allow_html=True
         )
+        
 
 def main():
     st.set_page_config(
@@ -147,17 +172,84 @@ def main():
     )
 
     st.title("Welcome to EmojiGen!")
-    
-    # Sidebar for navigation
-    st.sidebar.title("Navigation")
-    page = st.sidebar.radio("Select a Page", ("Draw Your Emoji", "EmojiGen Photo", "EmojiGen Text"))
 
-    if page == "Draw Your Emoji":
+    st.markdown(
+        """
+        <style>
+        .stApp {
+            background-color: #F5F8FF; 
+            color: #333333; 
+        }
+        /* Navigation bar styles */
+        .nav-bar {
+              display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #F5F8FF;
+            padding: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+
+        .stButton>button {
+            background-color: #A3D8FF;
+            border: none;
+            padding: 10px 20px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            margin: 0 10px
+        }
+
+        .stButton>button:hover {
+            background-color: pink;
+            color: white;
+        }
+        
+        .stButton>button:active {
+            background-color: yellow;
+            color: white;
+        }
+
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # Initialize session state for page selection
+    if "page" not in st.session_state:
+        st.session_state.page = "EmojiGen Draw"
+
+    # Create a row of columns for horizontal buttons
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        if st.button("EmojiGen Draw", key="draw_emoji"):
+            st.session_state.page = "EmojiGen Draw"
+    
+    with col2:
+        if st.button("EmojiGen Photo", key="emoji_photo"):
+            st.session_state.page = "EmojiGen Photo"
+    
+    with col3:
+        if st.button("EmojiGen Text", key="emoji_text"):
+            st.session_state.page = "EmojiGen Text"
+
+    # Display the appropriate page based on the selected option
+    if st.session_state.page == "EmojiGen Draw":
         draw_emoji_page()
-    elif page == "EmojiGen Photo":
+    elif st.session_state.page == "EmojiGen Photo":
         emoji_photo_page()
-    elif page == "EmojiGen Text":
+    elif st.session_state.page == "EmojiGen Text":
         emoji_text_page()
 
 if __name__ == "__main__":
     main()
+
+    
+
+  
