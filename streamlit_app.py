@@ -1,9 +1,3 @@
-import json
-from io import BytesIO
-from pathlib import Path
-
-import numpy as np
-import pandas as pd
 import streamlit as st
 from streamlit_drawable_canvas import st_canvas
 from PIL import Image
