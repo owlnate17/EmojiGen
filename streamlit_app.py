@@ -1,3 +1,6 @@
+from io import BytesIO
+from pathlib import Path
+from requests import HTTPError
 import streamlit as st
 from streamlit_drawable_canvas import st_canvas
 from PIL import Image
@@ -6,6 +9,9 @@ import re
 import uuid
 import time
 import os
+from huggingface_hub import InferenceClient 
+
+hugging_face_inference_client = None
 
 def draw_emoji_page():
     st.title("EmojiGen Draw")
@@ -91,6 +97,17 @@ def draw_emoji_page():
             custom_css
             + f'<a download="{file_path}" id="{button_id}" href="data:file/txt;base64,{b64}">Export PNG</a><br></br>'
         )
+
+        # Convert image to text:
+        converted_text = image_to_text(file_path)
+        text_filename = os.path.join("tmp", f'{button_id}.txt')
+        text = converted_text.strip()
+        with open(text_filename, "w") as file:
+            file.write(converted_text)
+        file.close()
+        st.write(f"Converted Text: {converted_text}")
+        dl_link += f'<a href="data:text/plain;base64,{base64.b64encode(converted_text.encode()).decode()}" download="{text_filename}.txt">Download text</a>'
+
         st.markdown(dl_link, unsafe_allow_html=True)
 
 def emoji_photo_page():
@@ -121,9 +138,40 @@ def emoji_photo_page():
         img_data = buffered.getvalue()
         b64 = base64.b64encode(img_data).decode()
 
+        # Save the image to a temporary file
+        try:
+                Path("tmp/").mkdir()
+        except FileExistsError:
+                pass
+
+        now = time.time()
+        N_HOURS_BEFORE_DELETION = 1
+        for f in Path("tmp/").glob("*.png"):
+            if os.stat(f).st_mtime < now - N_HOURS_BEFORE_DELETION * 3600:
+                Path.unlink(f)
+
+        button_id = re.sub(
+            "\d+", "", str(uuid.uuid4()).replace("-", "")
+        )
+            
+        file_path = f"tmp/{button_id}.png"
+        image.save(file_path, "PNG")
+
         # Create a download link for the PNG image
-        download_link = f'<a href="data:image/png;base64,{b64}" download="captured_image.png">Download PNG</a>'
+        download_link = f'<a href="data:image/png;base64,{b64}" download={file_path}>Download PNG</a>'
+
+        # Convert image to text:
+        converted_text = image_to_text(file_path)
+        text_filename = os.path.join("tmp", f'{button_id}.txt')
+        text = converted_text.strip()
+        with open(text_filename, "w") as file:
+            file.write(converted_text)
+        file.close()
+        st.write(f"Converted Text: {converted_text}")
+        text_download_link = f'<a href="data:text/plain;base64,{base64.b64encode(converted_text.encode()).decode()}" download="{text_filename}.txt">Download text</a>'
+
         st.markdown(download_link, unsafe_allow_html=True)
+        st.markdown(text_download_link, unsafe_allow_html=True)
 
 def emoji_text_page():
     """Function to create the EmojiGen Text page."""
@@ -147,10 +195,10 @@ def emoji_text_page():
 
         # Display the text
         st.write(f"You entered: {text}")
-        text_filename = "tmp/text.txt"
+        text_filename = os.path.join("tmp", "text.txt")
         with open(text_filename, "w") as file:
             file.write(text)
-
+        file.close()
         # Download link for the text file
         st.markdown(
             f'<a href="data:text/plain;base64,{base64.b64encode(text.encode()).decode()}" download="{text_filename}">Download text</a>',
@@ -241,7 +289,27 @@ def main():
     elif st.session_state.page == "EmojiGen Text":
         emoji_text_page()
 
+def image_to_text(imagePath: str):
+    ret_val = ""
+
+    try:
+        ret_val = hugging_face_inference_client.image_to_text(imagePath).generated_text
+    except HTTPError as err:
+        ret_val = "Network Error! Stacktrace: \n" + err.strerror
+
+    return ret_val
 if __name__ == "__main__":
+
+    try:
+        token = ""
+        with open(os.path.join("config", "hftoken")) as file:
+            while line := file.readline():
+                token = line.strip()
+
+        hugging_face_inference_client = InferenceClient(token=token)
+    except OSError as oe:
+        print("Error finding hftoken, please configure in ./config if you haven't already \n" + oe.strerror)
+        hugging_face_inference_client = InferenceClient()
     main()
 
     
