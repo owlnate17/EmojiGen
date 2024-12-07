@@ -295,7 +295,7 @@ def image_to_text(imagePath: str):
     try:
         ret_val = hugging_face_inference_client.image_to_text(imagePath).generated_text
     except HTTPError as err:
-        ret_val = "Network Error! Stacktrace: \n" + err.strerror
+        ret_val = "Network Error! Stacktrace: \n" + str(err.strerror)
 
     return ret_val
 if __name__ == "__main__":
