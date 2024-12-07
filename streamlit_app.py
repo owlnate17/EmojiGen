@@ -44,7 +44,7 @@ def draw_emoji_page():
             Path.unlink(f)
 
     button_id = re.sub(
-        "\d+", "", str(uuid.uuid4()).replace("-", "")
+        r"\d+", "", str(uuid.uuid4()).replace("-", "")
     )
     
     file_path = f"tmp/{button_id}.png"
@@ -151,7 +151,7 @@ def emoji_photo_page():
                 Path.unlink(f)
 
         button_id = re.sub(
-            "\d+", "", str(uuid.uuid4()).replace("-", "")
+            r"\d+", "", str(uuid.uuid4()).replace("-", "")
         )
             
         file_path = f"tmp/{button_id}.png"
